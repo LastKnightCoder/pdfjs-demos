@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pdf.js</title>
+  <link rel="stylesheet" href="https://unpkg.com/pdfjs-dist@2.14.305/web/pdf_viewer.css">
+  <style>
+    #container {
+      position: relative;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <canvas id="pdf"></canvas>
+    <div id="textLayer" class="textLayer"></div>
+  </div>
+
+  <script src="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@2.14.305/web/pdf_viewer.js"></script>
+  <script>
+    (async () => {
+      const pdf = await pdfjsLib.getDocument('demo.pdf').promise;
+      // const totalPages = pdf.numPages;
+      const page = await pdf.getPage(1);
+      const scale = 1.5;
+      const viewport = page.getViewport({
+        scale: scale,
+      });
+      // Support HiDPI-screens.
+      const outputScale = window.devicePixelRatio || 1;
+
+      const canvas = document.getElementById('pdf');
+      const context = canvas.getContext('2d');
+
+      canvas.width = Math.floor(viewport.width * outputScale);
+      canvas.height = Math.floor(viewport.height * outputScale);
+      canvas.style.width = Math.floor(viewport.width) + "px";
+      canvas.style.height = Math.floor(viewport.height) + "px";
+      const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] :
+        null;
+
+      const renderContext = {
+        canvasContext: context,
+        transform: transform,
+        viewport: viewport
+      };
+      await page.render(renderContext);
+      const textContent = await page.getTextContent();
+      const textLayer = new pdfjsViewer.TextLayerBuilder({
+        textLayerDiv: document.getElementById('textLayer'),
+        pageIndex: page.pageIndex,
+        viewport: viewport,
+        // findController: null,
+        // enhanceTextSelection: false,
+      });
+      textLayer.setTextContent(textContent);
+      textLayer.render();
+    })()
+    // const textLayer = document.getElementById('textLayer');
+    // textLayer.addEventListener('select', e => {
+    //   console.log(e);
+    // })
+    container.addEventListener('mouseup', e => {
+      if (window.getSelection().toString().length > 0) {
+        alert(window.getSelection().toString());
+      }
+    })
+  </script>
+</body>
+
+</html>

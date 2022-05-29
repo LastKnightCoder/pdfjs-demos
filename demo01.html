@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pdf.js</title>
+</head>
+
+<body>
+  <div id="container">
+    <canvas id="pdf" ></canvas>
+  </div>
+
+  <script src="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.min.js"></script>
+  <script src="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js"></script>
+  <script>
+    ;(async () => {
+      const pdf = await pdfjsLib.getDocument('demo.pdf').promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({
+        scale: 1,
+      });
+
+      const canvas = document.getElementById('pdf')
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+      // canvas.style.width = Math.floor(viewport.width) + "px";
+      // canvas.style.height = Math.floor(viewport.height) + "px";
+      const ctx = canvas.getContext('2d')
+    
+      const renderContext = {
+        canvasContext: ctx,
+        viewport: viewport
+      };
+      await page.render(renderContext);
+    })()
+  </script>
+</body>
+
+</html>
