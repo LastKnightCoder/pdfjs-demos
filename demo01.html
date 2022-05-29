@@ -17,7 +17,7 @@
   <script src="https://unpkg.com/pdfjs-dist@2.14.305/build/pdf.worker.min.js"></script>
   <script>
     ;(async () => {
-      const pdf = await pdfjsLib.getDocument('demo.pdf').promise;
+      const pdf = await pdfjsLib.getDocument('/pdfjs-demos/demo.pdf').promise;
       const page = await pdf.getPage(1);
       const viewport = page.getViewport({
         scale: 1,
